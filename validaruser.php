@@ -49,7 +49,7 @@
 
   <!-- Zona de modales -->
   <!-- Modal -->
-  <div class="modal fade" id="modal-validacion" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="modal-validacion" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog        ">
       <div class="modal-content">
         <div class="modal-header bg-primary text-light">
@@ -88,12 +88,28 @@
     //abrir el modal
     document.querySelector("#enviar").addEventListener("click", ()=>{
       if(idusuario != -1){
+        generarEnviarCodigo();
         modal.toggle();
       }else{
         alert("Ingresar nombre de usuario");
         document.querySelector("#user").focus();
       }
     })
+
+    function generarEnviarCodigo(){
+      const parametros = new URLSearchParams();
+      parametros.append("operacion", "enviarCorreo") 
+      parametros.append("email", document.querySelector("#email").value);
+      parametros.append("idusuario", idusuario); 
+      fetch('./controllers/Usuario.controller.php', {
+        method : 'POST',
+        body: parametros
+      })
+      .then(respuesta => respuesta.json())
+      .then(datos => {
+        console.log(datos);
+      });
+    }
 
     function buscador(){
       let parametros = new URLSearchParams();
