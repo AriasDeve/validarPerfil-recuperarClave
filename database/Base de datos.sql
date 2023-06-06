@@ -29,24 +29,55 @@ INSERT INTO usuarios
 UPDATE usuarios SET
 	claveacceso = '$2y$10$WY.iP85bEYxBMkVBG0jKO.9Q97kEbofLVwJPUT1OAmsDzLXQ8Pcka';
 
-SELECT * FROM usuarios;
 
--- TABLA RECUPERACIÓN DE CONTRASEÑAS
+UPDATE usuarios SET email = '1337304@senati.pe';
 
-UPDATE usuarios SET email = '1268627@senati.pe'
-
+-- TABLA RECUPERACION DE CONTRASEÑA
 CREATE TABLE recuperarclave
 (
-		idrecuperar			INT AUTO_INCREMENT PRIMARY KEY,
-		idusuario			INT 					 NOT NULL,
-		fechageneracion	DATETIME 		    NOT NULL DEFAULT NOW(),
-		email					VARCHAR(120) 		 NOT NULL,	-- Email que se utilizó en ese momento
-		clavegenerada		CHAR(4)				 NOT NULL,
-		estado				CHAR(1)				 NOT NULL DEFAULT '1',
-		CONSTRAINT fk_idusuario_rcl FOREIGN KEY (idusuario) REFERENCES usuarios(idusuario)	
+	idrecuperar			INT 				AUTO_INCREMENT PRIMARY KEY,
+	idusuario			INT 				NOT NULL,
+	fechageneracion	DATETIME 		NOT NULL DEFAULT NOW(),
+	email					VARCHAR(120)	NOT NULL, 
+	clavegenerada		CHAR(4)			NOT NULL,
+	estado				CHAR(1)			NOT NULL DEFAULT '1',
+	CONSTRAINT fk_idusuario_rcl FOREIGN KEY (idusuario) REFERENCES usuarios (idusuario)
 )ENGINE = INNODB;
 
-SELECT * FROM recuperarclave;
+DELIMITER $$
+CREATE PROCEDURE spu_registra_claverecuperacion
+(
+	IN _idusuario			INT,
+	IN _email				VARCHAR(120),
+	IN _clavegenerada		CHAR(4)
+)
+BEGIN	
+	UPDATE recuperarclave  SET estado = '0' WHERE idusuario = _idusuario;
+	INSERT INTO recuperarclave (idusuario, email, clavegenerada)
+		VALUES (_idusuario, _email, _clavegenerada);
+END$$
+
+CALL spu_registra_claverecuperacion(1, 'alexander171194@gmail.com', '1111');
+
 DELETE FROM recuperarclave;
 ALTER TABLE recuperarclave AUTO_INCREMENT 1;
-INSERT INTO recuperarclave (idusuario,email,clavegenerada) VALUES(1,'email@gmail.com','1234');
+SELECT * FROM recuperarclave;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
